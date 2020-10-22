@@ -38,7 +38,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* WS2812 RGB LED */
 #define RGB_DI_PIN D4
 #define RGBLIGHT_ANIMATIONS
-#define RGBLED_NUM 14
+#undef RGBLED_NUM
+#define RGBLED_NUM 30
+#define RGBLIGHT_SLEEP
 
 /* COL2ROW or ROW2COL */
 #define DIODE_DIRECTION COL2ROW

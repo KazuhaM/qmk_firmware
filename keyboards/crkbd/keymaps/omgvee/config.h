@@ -46,6 +46,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #undef PRODUCT
 #define PRODUCT "Vee's hotswappable Helidox/Corne/CRKBD split keeb"
-
-#define NO_ACTION_MACRO
-#define NO_ACTION_FUNCTION
