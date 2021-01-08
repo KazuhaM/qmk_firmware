@@ -1,5 +1,6 @@
 #pragma once
 
+<<<<<<< HEAD
 #include "../crkbd.h"
 
 //void promicro_bootloader_jmp(bool program);
@@ -8,6 +9,13 @@
 #ifdef RGBLIGHT_ENABLE
 //rgb led driver
 #include "ws2812.h"
+=======
+#include "crkbd.h"
+#if defined(KEYBOARD_crkbd_rev1_legacy)
+#    include "legacy.h"
+#elif defined(KEYBOARD_crkbd_rev1_common)
+#    include "common.h"
+>>>>>>> upstream/master
 #endif
 
 #ifdef USE_I2C

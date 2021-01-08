@@ -17,9 +17,7 @@
 
 // Defines the keycodes used by our macros in process_record_user
 enum custom_keycodes {
-    TO_AUDIO_G = SAFE_RANGE,
-    TO_AUDIO_Y,
-    DBL_SFT,
+    DBL_SFT= SAFE_RANGE,
     EXC_A1,
     EXC_A2
 };
@@ -44,8 +42,6 @@ enum layer_number {
     _CHROME,
     _EXCEL,
     _AUDIOY,
-    _AUDIOYS,
-    _AUDIOG,
     _WORD,
     _WORDREVIEW,
     _SHORTCUT,
@@ -54,11 +50,16 @@ enum layer_number {
     _WCSSET,
     _WCSFLT,
     _BLCKDSRT,
+    _MODIFIER,
     _LAYERLIST,
     _GAMER
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+/*
+    F1  | F2  | F3  | <   | up  | >     |
+    lyr | F4  | F   | lft | dwn | rght    |
+*/
   [_GENERAL] =LAYOUT( \
     KC_TAB         ,KC_LSFT ,KC_LALT       ,LALT(KC_LEFT)  ,KC_UP    ,LALT(KC_RGHT), \
     MO(_LAYERLIST) ,KC_BSPC    ,LSFT(KC_F10)  ,KC_LEFT        ,KC_DOWN  ,KC_RGHT \
@@ -70,24 +71,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
 
   [_EXCEL] =LAYOUT( \
-    EXC_A1, KC_TAB,LALT(KC_3),LSFT(KC_SPC),LCTL(KC_UP),LCTL(KC_SPC), \
+    EXC_A1, EXC_A2,LALT(KC_3),LSFT(KC_SPC),LCTL(KC_UP),LCTL(KC_SPC), \
     KC_TRNS,LALT(KC_4),LSFT(KC_F10),LCTL(KC_PGUP),LCTL(KC_DOWN),LCTL(KC_PGDN) \
   ),
 
-  [_AUDIOY] =LAYOUT( \
-    KC_S,TO_AUDIO_G,KC_MUTE,KC_VOLD,KC_SPC,KC_VOLU, \
-    KC_TRNS,LALT(KC_Y),KC_ENT,KC_K,MO(_AUDIOYS),KC_J \
-  ),
-
-  [_AUDIOYS] =LAYOUT( \
-    KC_R,KC_NO,KC_TRNS,KC_TRNS,KC_TRNS,KC_TRNS, \
-    KC_NO,KC_NO,KC_TRNS,KC_H,KC_TRNS,KC_L \
-  ),
-
-  [_AUDIOG] =LAYOUT( \
-    KC_NO,LALT(KC_G),KC_MUTE,KC_VOLD,KC_MPLY,KC_VOLU, \
-    KC_TRNS,TO_AUDIO_Y,KC_ENT,KC_MPRV,KC_MSTP,KC_MNXT \
-  ),
+ [_AUDIOY] =LAYOUT( \
+  KC_S,KC_R,KC_MUTE,KC_H,KC_MSTP,KC_L, \
+  KC_TRNS,LALT(KC_Y),KC_ENT,KC_MPRV,KC_MPLY,KC_MNXT\
+),
 
   [_WORD] =LAYOUT( \
     LALT(KC_1),LALT(KC_2),LALT(KC_3),TO(_WORDREVIEW),KC_NO,KC_NO, \
@@ -96,12 +87,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_WORDREVIEW] =LAYOUT( \
     LALT(KC_1),LALT(KC_2),LALT(KC_3),LCA(KC_J),LCA(KC_A),LCA(KC_N), \
-    KC_TRNS,LALT(KC_4),LSFT(KC_F10),LCA(KC_L),LCA(KC_B),LCA(KC_Q) \
+    KC_TRNS,LALT(KC_4),LSFT(KC_F10),KC_NO,LCA(KC_B),LCA(KC_Q) \
   ),
 
   [_SHORTCUT] =LAYOUT( \
-    KC_NO,KC_NO,LALT(KC_T),LALT(KC_E),LALT(KC_B),LALT(KC_C), \
-    KC_TRNS,KC_NO,KC_ENT,KC_NO,KC_NO,KC_NO\
+    LALT(KC_B),KC_NO,LALT(KC_N),LALT(KC_E),LALT(KC_K),LALT(KC_C), \
+    KC_TRNS,KC_NO,KC_ENT,LALT(KC_R),LALT(KC_H),LALT(KC_T)\
   ),
 
   [_ANDROID] =LAYOUT( \
@@ -129,8 +120,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TRNS       ,KC_1     ,KC_2     ,KC_3       ,KC_4     , KC_5\
   ),
 
+  [_MODIFIER] =LAYOUT( \
+    KC_RALT    , KC_RSFT , KC_RCTL   , C(S(KC_LALT)) , S(KC_LGUI) , C(KC_LALT),\
+    KC_TRNS    , KC_RGUI , KC_LGUI   , KC_LCTL       , KC_LSFT    , KC_LALT\
+  ),
+
   [_LAYERLIST] =LAYOUT( \
-    KC_NO    ,KC_NO , TO(_ANDROID)  ,TO(_AUDIOY)  ,TO(_CHROME)  ,TO(_GENERAL), \
+    TO(_MODIFIER) ,KC_NO , TO(_ANDROID)  ,TO(_AUDIOY)  ,TO(_CHROME)  ,TO(_GENERAL), \
     KC_TRNS  ,MO(_GAMER), TO(_PASTERS)   ,TO(_WORD)    ,TO(_EXCEL)   ,TO(_SHORTCUT)\
   ),
 
@@ -151,28 +147,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   //   return false;
   // }
   switch (keycode) {
-    case TO_AUDIO_Y:
-      if (record->event.pressed) {
-        layer_on(_AUDIOY);
-        layer_off(_AUDIOG);
-        register_code(KC_LALT);
-        register_code(KC_Y);
-        unregister_code(KC_Y);
-        unregister_code(KC_LALT);
-      };
-      return false;
-      break;
-    case TO_AUDIO_G:
-      if (record->event.pressed) {
-        layer_on(_AUDIOG);
-        layer_off(_AUDIOY);
-        register_code(KC_LALT);
-        register_code(KC_G);
-        unregister_code(KC_G);
-        unregister_code(KC_LALT);
-      };
-      return false;
-      break;
     case DBL_SFT:
       if (record->event.pressed) {
         register_code(KC_LSFT);

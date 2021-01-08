@@ -23,6 +23,7 @@ enum custom_keycodes {
 };
 
 #define KC_ZNRM LCTL(KC_P0) // zoom normal
+#define KC_ZNRM2 LCTL(KC_0) // zoom normal
 #define KC_RPS RRTEN_PS
 // #define TX_C LCTL(KC_C)
 // #define TX_V LCTL(KC_V)
@@ -33,10 +34,10 @@ int mn_layer = 0;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     /* Default layer
-        | Knob 1: Vol Dn/Up |                       | Knob 2: アプリケーション選択 |
-        | Press: Mute       | Hold: Layer  change   | Press: Alt                 |
-        | PGUP              | Up                    | PGDN                       |
-        | Left              | Down                  | Right                      |
+        | Knob 1: Vol Dn/Up |                       | Knob 2: レイヤ選択 |
+        | Press: Mute       | Hold: Layer  change   | Press: Alt        |
+        | PGUP              | Up                    | PGDN              |
+        | Left              | Down                  | Right             |
      */
     [0] = LAYOUT(
         KC_MUTE , CH_LYR    , KC_RPS,
@@ -48,7 +49,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         | Knob 1:zoom by +- |                   | Knob 2: zoom by scroll  |
         | zoom           | Hold: Layer  change  | no |
         | no             | no                   | no |
-        | Media Previous | no                   | no |
+        | LCTL           | no                   | no |
      */
     [1] = LAYOUT(
         KC_ZNRM , _______   ,_______ ,
@@ -65,7 +66,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [2] = LAYOUT(
         KC_MUTE , _______   ,  _______,
         C(S(KC_H)) , C(S(KC_F))   ,C(S(KC_Y)),
-        C(S(KC_U)) , C(S(KC_V))  , C(S(KC_A))
+        C(S(KC_U)) , C(S(KC_V))  , C(S(A(KC_A)))
     ),
 ////////////////////////////////////////////////////////////////
     /*music center
@@ -93,10 +94,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 ////////////////////////////////////////////////////////////////
     /*word
-        | Knob 1:単語単位移動    |                       | Knob 2: PgDn/Up  |
-        | Escape                | Hold: Layer  change   | Media Stop |
-        | Held: Layer 2         | Home                  | RGB Mode   |
-        | Media Previous        | End                   | Media Next |
+        | Knob 1:単語移動 |                     | Knob 2: PgDn/Up  |
+        | HOME           | Hold: Layer  change | C(HOME)          |
+        | NO             | NO                  | NO               |
+        | NO             | NO                  | NO               |
 */
     [5] = LAYOUT(
         KC_HOME  , _______   , _______,
@@ -104,16 +105,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_NO   , KC_NO     , KC_NO
     ),
 ////////////////////////////////////////////////////////////////
-    /*premiere pro
-        | Escape         | Hold: Layer  change  | Media Stop |
-        | Held: Layer 2  | Home | RGB Mode   |
-        | Media Previous | End  | Media Next |
+    /*R studio
+        | zoom          | Hold: Layer  change | script Tab change |
+        | focus source  | show source outline | focus colsole     |
+        | zoom left col | show all pane       | zoom right col    |
 */
     [6] = LAYOUT(
-        KC_ZNRM  , _______   , _______,
-        KC_LCTL   , KC_NO     , KC_K,
-        KC_LSFT    , KC_LEFT    , KC_RGHT
+        KC_ZNRM2  , _______   , _______,
+        C(KC_P1)   , C(S(KC_O))     , C(KC_P2),
+        MEH(KC_F12)    , MEH(KC_0)    , MEH(KC_F11)
     ),
+    /*premiere pro2
+        | zoom  | Hold: Layer  change | ? |
+        | up    | down                | M |
+        | LSFT  | I                   | O |
+*/
 
     [7] = LAYOUT(
         KC_ZNRM  , _______   , _______,
@@ -121,21 +127,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LSFT   , KC_I    , KC_O
     ),
     /*discord -chat software
-        | Knob 1: Vol Dn/Up |                       | Knob 2: チャンネル切り替え   |
-        | Press: Mute       | Hold: Layer  change   | Press: ギャラリーモード  |
-        | chat              | full screen           | raise my hand      |
-        | participants      | video on/off          | voice on/off       |
+        | Knob 1: Vol Dn/Up |                     | Knob 2: チャンネル切り替え |
+        | Press: Mute       | Hold: Layer  change | Press: K                 |
+        | chat scroll up    | NO                  | NO                       |
+        | chat scroll down  | speaker mute on/off | mic mute on/off          |
      */
     [8] = LAYOUT(
         KC_MUTE , _______   , _______,
-        KC_PGUP , KC_NO     , KC_A,
+        KC_PGUP , KC_NO     , KC_NO,
         KC_PGDN , C(S(KC_D))  , C(S(KC_M))
     ),
 ////////////////////////////////////////////////////////////////
     /*LED lighting
-        | NO         | Hold: Layer  change  | NO |
-        | Toggle     | NO                   | NO                      |
-        | NO         | NO                   | change sheet name       |
+        | ON/OFF   | Hold: Layer  change  | NO |
+        | Mode     | NO                   | NO |
+        | Rev Mode | NO                   | NO |
     */
 
     [9] = LAYOUT(
@@ -231,9 +237,15 @@ void encoder_update_user(uint8_t index, bool clockwise) {
                 }
             }else if (layer_state_is(6)){
                 if (clockwise) {
-                    tap_code(KC_L);
+                    register_code(KC_LCTL);
+                    tap_code(KC_TAB);
+                    unregister_code(KC_LCTL);
                 } else {
-                    tap_code(KC_J);
+                    register_code(KC_LCTL);
+                    register_code(KC_LSFT);
+                    tap_code(KC_TAB);
+                    unregister_code(KC_LSFT);
+                    unregister_code(KC_LCTL);
                 }
             }else if (layer_state_is(7)){
                 if (clockwise) {
@@ -314,7 +326,7 @@ void encoder_update_user(uint8_t index, bool clockwise) {
         }else if (layer_state_is(6)){
             if (clockwise) {
                 // SEND_STRING(SS_LCTRL("1")); // audacity zoom in
-                SEND_STRING(SS_LCTRL("^")); // audacity zoom in
+                SEND_STRING(SS_LCTRL("+")); // audacity zoom in
             } else {
                 // SEND_STRING(SS_LCTRL("3")); // audacity zoom out
                 SEND_STRING(SS_LCTRL("-")); // audacity zoom out
@@ -402,7 +414,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     }
                 }else if (layer_state_is(6)) {
                     if (record->event.pressed) {
-                        tap_code(KC_K);
+                        register_code(KC_LCTL);
+                        register_code(KC_LSFT);
+                        tap_code(KC_DOT);
+                        unregister_code(KC_LSFT);
+                        unregister_code(KC_LCTL);
                     }
                 }else if (layer_state_is(7)) {
                     if (record->event.pressed) {
